@@ -33,7 +33,7 @@ flutter:
     - assets/icons/
     - assets/sounds/
 
-  # fonts:
-  #   - family: PressStart2P
-  #     fonts:
-  #       - asset: assets/fonts/PressStart2P-Regular.ttf
+  fonts:
+    - family: PressStart2P
+      fonts:
+        - asset: assets/fonts/PressStart2P-Regular.ttf
