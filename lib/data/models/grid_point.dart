@@ -1,4 +1,4 @@
-import 'direction.dart';
+import 'package:app_ran_san_moi/data/models/direction.dart';
 
 class GridPoint {
   const GridPoint(this.x, this.y);
