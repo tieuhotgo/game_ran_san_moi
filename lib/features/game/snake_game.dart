@@ -15,7 +15,7 @@ class SnakeGame {
   final List<GridPoint> _snake = [];
   late GridPoint _food;
   Direction _direction = Direction.right;
-  Direction _nextDirection = Direction.right;
+  final List<Direction> _pendingDirections = [];
   GameStatus _status = GameStatus.ready;
   int _score = 0;
   int _foodsEaten = 0;
@@ -30,8 +30,7 @@ class SnakeGame {
 
   int get tickMs {
     final speedUps = _foodsEaten ~/ GameConstants.foodsPerSpeedUp;
-    final ms =
-        GameConstants.initialTickMs - speedUps * GameConstants.tickStepMs;
+    final ms = GameConstants.initialTickMs - speedUps * GameConstants.tickStepMs;
     return max(GameConstants.minTickMs, ms);
   }
 
@@ -43,7 +42,7 @@ class SnakeGame {
       _snake.add(GridPoint(headX - i, headY));
     }
     _direction = Direction.right;
-    _nextDirection = Direction.right;
+    _pendingDirections.clear();
     _score = 0;
     _foodsEaten = 0;
     _status = GameStatus.ready;
@@ -80,10 +79,15 @@ class SnakeGame {
   }
 
   void changeDirection(Direction newDirection) {
-    if (newDirection.isOppositeOf(_direction)) {
+    final reference =
+        _pendingDirections.isEmpty ? _direction : _pendingDirections.last;
+    if (newDirection == reference || newDirection.isOppositeOf(reference)) {
       return;
     }
-    _nextDirection = newDirection;
+    if (_pendingDirections.length >= GameConstants.inputBufferSize) {
+      return;
+    }
+    _pendingDirections.add(newDirection);
   }
 
   bool tick() {
@@ -91,7 +95,9 @@ class SnakeGame {
       return false;
     }
 
-    _direction = _nextDirection;
+    if (_pendingDirections.isNotEmpty) {
+      _direction = _pendingDirections.removeAt(0);
+    }
     final newHead = head.moved(_direction);
 
     if (!_isInside(newHead)) {
@@ -100,7 +106,8 @@ class SnakeGame {
     }
 
     final willEat = newHead == _food;
-    final bodyToCheck = willEat ? _snake : _snake.sublist(0, _snake.length - 1);
+    final bodyToCheck =
+        willEat ? _snake : _snake.sublist(0, _snake.length - 1);
 
     if (bodyToCheck.contains(newHead)) {
       _status = GameStatus.gameOver;

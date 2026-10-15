@@ -23,7 +23,7 @@ void main() {
     expect(game.snake.length, GameConstants.initialSnakeLength);
     expect(
       game.head,
-      GridPoint(GameConstants.columns ~/ 2, GameConstants.rows ~/ 2),
+      const GridPoint(GameConstants.columns ~/ 2, GameConstants.rows ~/ 2),
     );
     expect(game.score, 0);
     expect(game.snake.contains(game.food), isFalse);
@@ -53,6 +53,44 @@ void main() {
     game.changeDirection(Direction.left);
     game.tick();
     expect(game.direction, Direction.right);
+  });
+
+  test('bam nhanh 2 phim trong 1 tick van nhan du', () {
+    final game = newGame();
+    game.placeFood(const GridPoint(0, 0));
+    game.start();
+    game.changeDirection(Direction.up);
+    game.changeDirection(Direction.left);
+    game.tick();
+    expect(game.direction, Direction.up);
+    game.tick();
+    expect(game.direction, Direction.left);
+  });
+
+  test('phim nguoc voi phim vua bam thi bo qua', () {
+    final game = newGame();
+    game.placeFood(const GridPoint(0, 0));
+    game.start();
+    game.changeDirection(Direction.up);
+    game.changeDirection(Direction.down);
+    game.tick();
+    game.tick();
+    expect(game.direction, Direction.up);
+  });
+
+  test('bo dem day thi bo bot phim thua', () {
+    final game = newGame();
+    game.placeFood(const GridPoint(0, 0));
+    game.start();
+    game.changeDirection(Direction.up);
+    game.changeDirection(Direction.left);
+    game.changeDirection(Direction.down);
+    game.changeDirection(Direction.right);
+    for (var i = 0; i < 4; i++) {
+      game.tick();
+    }
+    expect(game.direction, Direction.down);
+    expect(game.status, GameStatus.playing);
   });
 
   test('dam tuong thi thua', () {
