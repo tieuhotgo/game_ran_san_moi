@@ -10,11 +10,11 @@ enum Direction {
   final int dy;
 
   Direction get opposite => switch (this) {
-        Direction.up => Direction.down,
-        Direction.down => Direction.up,
-        Direction.left => Direction.right,
-        Direction.right => Direction.left,
-      };
+    Direction.up => Direction.down,
+    Direction.down => Direction.up,
+    Direction.left => Direction.right,
+    Direction.right => Direction.left,
+  };
 
   bool isOppositeOf(Direction other) => opposite == other;
 }

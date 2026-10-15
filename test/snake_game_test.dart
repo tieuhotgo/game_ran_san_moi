@@ -21,7 +21,10 @@ void main() {
     final game = newGame();
     expect(game.status, GameStatus.ready);
     expect(game.snake.length, GameConstants.initialSnakeLength);
-    expect(game.head, GridPoint(GameConstants.columns ~/ 2, GameConstants.rows ~/ 2));
+    expect(
+      game.head,
+      GridPoint(GameConstants.columns ~/ 2, GameConstants.rows ~/ 2),
+    );
     expect(game.score, 0);
     expect(game.snake.contains(game.food), isFalse);
   });
