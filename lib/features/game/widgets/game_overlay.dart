@@ -11,6 +11,7 @@ class GameOverlay extends StatelessWidget {
     required this.onStart,
     required this.onResume,
     required this.onRestart,
+    required this.onMenu,
   });
 
   final GameStatus status;
@@ -19,6 +20,7 @@ class GameOverlay extends StatelessWidget {
   final VoidCallback onStart;
   final VoidCallback onResume;
   final VoidCallback onRestart;
+  final VoidCallback onMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class GameOverlay extends StatelessWidget {
           subtitle: 'SCORE $score',
           buttonLabel: 'RESUME',
           onPressed: onResume,
+          onMenu: onMenu,
         ),
       GameStatus.gameOver => _panel(
           context,
@@ -46,6 +49,7 @@ class GameOverlay extends StatelessWidget {
           subtitle: isNewBest ? 'NEW BEST $score' : 'SCORE $score',
           buttonLabel: 'PLAY AGAIN',
           onPressed: onRestart,
+          onMenu: onMenu,
         ),
     };
   }
@@ -56,6 +60,7 @@ class GameOverlay extends StatelessWidget {
     required String subtitle,
     required String buttonLabel,
     required VoidCallback onPressed,
+    VoidCallback? onMenu,
   }) {
     final textTheme = Theme.of(context).textTheme;
 
@@ -77,6 +82,10 @@ class GameOverlay extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           ElevatedButton(onPressed: onPressed, child: Text(buttonLabel)),
+          if (onMenu != null) ...[
+            const SizedBox(height: 12),
+            TextButton(onPressed: onMenu, child: const Text('MENU')),
+          ],
         ],
       ),
     );

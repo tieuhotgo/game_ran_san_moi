@@ -1,6 +1,6 @@
 import 'package:app_ran_san_moi/core/theme/app_theme.dart';
 import 'package:app_ran_san_moi/data/services/storage_service.dart';
-import 'package:app_ran_san_moi/features/game/game_screen.dart';
+import 'package:app_ran_san_moi/features/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatelessWidget {
@@ -14,7 +14,7 @@ class App extends StatelessWidget {
       title: 'Snake',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: GameScreen(storage: storage),
+      home: HomeScreen(storage: storage),
     );
   }
 }

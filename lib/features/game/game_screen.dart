@@ -232,6 +232,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               onStart: () => _run(_controller.start),
               onResume: () => _run(_controller.resume),
               onRestart: () => _run(_controller.restart),
+              onMenu: () => Navigator.of(context).pop(),
             ),
           ],
         ),
