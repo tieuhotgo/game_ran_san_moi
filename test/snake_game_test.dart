@@ -110,8 +110,14 @@ void main() {
     final game = newGame();
     game.start();
     eatAhead(game, GameConstants.foodsPerSpeedUp);
-    expect(game.snake.length, GameConstants.initialSnakeLength + 3);
-    expect(game.score, GameConstants.pointsPerFood * 3);
+    expect(
+      game.snake.length,
+      GameConstants.initialSnakeLength + GameConstants.foodsPerSpeedUp,
+    );
+    expect(
+      game.score,
+      GameConstants.pointsPerFood * GameConstants.foodsPerSpeedUp,
+    );
     expect(game.tickMs, GameConstants.initialTickMs - GameConstants.tickStepMs);
   });
 

@@ -1,6 +1,8 @@
 import 'package:app_ran_san_moi/core/utils/app_colors.dart';
 import 'package:app_ran_san_moi/data/models/direction.dart';
 import 'package:app_ran_san_moi/data/models/game_status.dart';
+import 'package:app_ran_san_moi/data/services/audio_service.dart';
+import 'package:app_ran_san_moi/data/services/storage_service.dart';
 import 'package:app_ran_san_moi/features/game/game_controller.dart';
 import 'package:app_ran_san_moi/features/game/widgets/board_painter.dart';
 import 'package:app_ran_san_moi/features/game/widgets/game_hud.dart';
@@ -9,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  const GameScreen({super.key, required this.storage});
+
+  final StorageService storage;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -18,14 +22,24 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   static const double _swipeThreshold = 16;
 
+  late final AudioService _audio;
   late final GameController _controller;
   final FocusNode _focusNode = FocusNode();
+  late int _highScore;
+  late bool _soundEnabled;
   Offset _swipeDelta = Offset.zero;
 
   @override
   void initState() {
     super.initState();
-    _controller = GameController();
+    _highScore = widget.storage.highScore;
+    _soundEnabled = widget.storage.soundEnabled;
+    _audio = AudioService()..enabled = _soundEnabled;
+    _controller = GameController(
+      onStart: _audio.playStart,
+      onEat: _audio.playEat,
+      onGameOver: _handleGameOver,
+    );
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -33,6 +47,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
+    _audio.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -42,6 +57,21 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     if (state != AppLifecycleState.resumed) {
       _controller.pause();
     }
+  }
+
+  void _handleGameOver() {
+    _audio.playGameOver();
+    final score = _controller.score;
+    if (score > _highScore) {
+      setState(() => _highScore = score);
+      widget.storage.saveHighScore(score);
+    }
+  }
+
+  void _toggleSound() {
+    setState(() => _soundEnabled = !_soundEnabled);
+    _audio.enabled = _soundEnabled;
+    widget.storage.setSoundEnabled(_soundEnabled);
   }
 
   void _run(VoidCallback action) {
@@ -87,6 +117,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
     if (key == LogicalKeyboardKey.escape || key == LogicalKeyboardKey.keyP) {
       _controller.togglePause();
+      return KeyEventResult.handled;
+    }
+
+    if (key == LogicalKeyboardKey.keyM) {
+      _toggleSound();
       return KeyEventResult.handled;
     }
 
@@ -146,8 +181,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   children: [
                     GameHud(
                       score: _controller.score,
+                      highScore: _highScore,
                       status: _controller.status,
+                      soundEnabled: _soundEnabled,
                       onTogglePause: () => _run(_controller.togglePause),
+                      onToggleSound: () => _run(_toggleSound),
                     ),
                     Expanded(
                       child: Center(
@@ -190,6 +228,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             GameOverlay(
               status: _controller.status,
               score: _controller.score,
+              highScore: _highScore,
               onStart: () => _run(_controller.start),
               onResume: () => _run(_controller.resume),
               onRestart: () => _run(_controller.restart),

@@ -6,13 +6,19 @@ class GameHud extends StatelessWidget {
   const GameHud({
     super.key,
     required this.score,
+    required this.highScore,
     required this.status,
+    required this.soundEnabled,
     required this.onTogglePause,
+    required this.onToggleSound,
   });
 
   final int score;
+  final int highScore;
   final GameStatus status;
+  final bool soundEnabled;
   final VoidCallback onTogglePause;
+  final VoidCallback onToggleSound;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,7 @@ class GameHud extends StatelessWidget {
         status == GameStatus.playing || status == GameStatus.paused;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 12, 8),
+      padding: const EdgeInsets.fromLTRB(24, 16, 8, 8),
       child: Row(
         children: [
           Column(
@@ -29,16 +35,26 @@ class GameHud extends StatelessWidget {
             children: [
               Text('SCORE', style: textTheme.bodyMedium),
               const SizedBox(height: 8),
-              Text(
-                score.toString().padLeft(4, '0'),
-                style: textTheme.headlineMedium,
-              ),
+              Text(_format(score), style: textTheme.headlineMedium),
+            ],
+          ),
+          const SizedBox(width: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('BEST', style: textTheme.bodyMedium),
+              const SizedBox(height: 8),
+              Text(_format(highScore), style: textTheme.titleLarge),
             ],
           ),
           const Spacer(),
           IconButton(
+            onPressed: onToggleSound,
+            color: AppColors.textPrimary,
+            icon: Icon(soundEnabled ? Icons.volume_up : Icons.volume_off),
+          ),
+          IconButton(
             onPressed: canPause ? onTogglePause : null,
-            iconSize: 32,
             color: AppColors.textPrimary,
             icon: Icon(
               status == GameStatus.paused ? Icons.play_arrow : Icons.pause,
@@ -48,4 +64,6 @@ class GameHud extends StatelessWidget {
       ),
     );
   }
+
+  String _format(int value) => value.toString().padLeft(4, '0');
 }

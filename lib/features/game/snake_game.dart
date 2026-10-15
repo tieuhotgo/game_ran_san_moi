@@ -30,7 +30,8 @@ class SnakeGame {
 
   int get tickMs {
     final speedUps = _foodsEaten ~/ GameConstants.foodsPerSpeedUp;
-    final ms = GameConstants.initialTickMs - speedUps * GameConstants.tickStepMs;
+    final ms =
+        GameConstants.initialTickMs - speedUps * GameConstants.tickStepMs;
     return max(GameConstants.minTickMs, ms);
   }
 
@@ -79,8 +80,9 @@ class SnakeGame {
   }
 
   void changeDirection(Direction newDirection) {
-    final reference =
-        _pendingDirections.isEmpty ? _direction : _pendingDirections.last;
+    final reference = _pendingDirections.isEmpty
+        ? _direction
+        : _pendingDirections.last;
     if (newDirection == reference || newDirection.isOppositeOf(reference)) {
       return;
     }
@@ -106,8 +108,7 @@ class SnakeGame {
     }
 
     final willEat = newHead == _food;
-    final bodyToCheck =
-        willEat ? _snake : _snake.sublist(0, _snake.length - 1);
+    final bodyToCheck = willEat ? _snake : _snake.sublist(0, _snake.length - 1);
 
     if (bodyToCheck.contains(newHead)) {
       _status = GameStatus.gameOver;

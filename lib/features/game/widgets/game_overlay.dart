@@ -7,6 +7,7 @@ class GameOverlay extends StatelessWidget {
     super.key,
     required this.status,
     required this.score,
+    required this.highScore,
     required this.onStart,
     required this.onResume,
     required this.onRestart,
@@ -14,12 +15,15 @@ class GameOverlay extends StatelessWidget {
 
   final GameStatus status;
   final int score;
+  final int highScore;
   final VoidCallback onStart;
   final VoidCallback onResume;
   final VoidCallback onRestart;
 
   @override
   Widget build(BuildContext context) {
+    final isNewBest = score > 0 && score >= highScore;
+
     return switch (status) {
       GameStatus.playing => const SizedBox.shrink(),
       GameStatus.ready => _panel(
@@ -39,7 +43,7 @@ class GameOverlay extends StatelessWidget {
       GameStatus.gameOver => _panel(
           context,
           title: 'GAME OVER',
-          subtitle: 'SCORE $score',
+          subtitle: isNewBest ? 'NEW BEST $score' : 'SCORE $score',
           buttonLabel: 'PLAY AGAIN',
           onPressed: onRestart,
         ),

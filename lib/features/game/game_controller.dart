@@ -8,12 +8,8 @@ import 'package:app_ran_san_moi/features/game/snake_game.dart';
 import 'package:flutter/foundation.dart';
 
 class GameController extends ChangeNotifier {
-  GameController({
-    SnakeGame? game,
-    this.onStart,
-    this.onEat,
-    this.onGameOver,
-  }) : _game = game ?? SnakeGame();
+  GameController({SnakeGame? game, this.onStart, this.onEat, this.onGameOver})
+    : _game = game ?? SnakeGame();
 
   final SnakeGame _game;
   final VoidCallback? onStart;
